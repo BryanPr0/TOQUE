@@ -1,5 +1,0 @@
-{
-  "dependencies": {
-    "@supabase/supabase-js": "latest"
-  }
-}
