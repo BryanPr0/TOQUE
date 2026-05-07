@@ -1085,7 +1085,47 @@ window.addEventListener('DOMContentLoaded', function(){
   loadScorers();
   loadTodaySidebar();
   loadNews('futbol', 'news-home');
+// ... (lo que ya tienes arriba)
 
+  // Función para enviar datos a la API que creamos en Vercel
+  async function publicarComentario() {
+    const btn = document.querySelector('button[type="submit"]') || document.querySelector('button.bg-green-500');
+    const nombre = document.querySelector('input[name="nombre"]')?.value || document.querySelector('input[placeholder*="Morocho"]')?.value;
+    const equipo = document.querySelector('select')?.value;
+    const comentario = document.querySelector('textarea')?.value;
+
+    if(!nombre || !comentario) return alert("Por favor llena los campos");
+
+    const respuesta = await fetch('/api/comentarios', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre, equipo, comentario })
+    });
+
+    if (respuesta.ok) {
+      alert('¡Comentario publicado!');
+      location.reload(); 
+    } else {
+      alert('Error al publicar');
+    }
+  }
+
+  // Cargar datos iniciales
+  loadMatchesSection('ucl');
+  loadTable('11');
+  loadScorers();
+  loadTodaySidebar();
+  loadNews('futbol', 'news-home');
+  // loadComments(); // Descomenta esta línea cuando crees la función para mostrar la lista
+
+  // Auto-refresh
+  startAutoRefresh();
+
+  // Asignar el evento al botón de publicar
+  const btnPublicar = document.querySelector('button.bg-green-500');
+  if(btnPublicar) btnPublicar.onclick = publicarComentario;
+
+}); // Fin del DOMContentLoaded
   // Auto-refresh
   startAutoRefresh();
 });
