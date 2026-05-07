@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Toque y Pase — Fútbol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#111318;--card:#1a1d24;--card2:#21252e;--hov:#252930;--sb:#13161d;--bdr:#2a2d35;--grn:#00d68f;--grn2:#00a96e;--grn-a:rgba(0,214,143,.09);--red:#ff5c5c;--yel:#ffd84d;--blu:#4da6ff;--t1:#ffffff;--t2:#9499a8;--t3:#5c6070;--r:10px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);font-size:14px;line-height:1.5;}
+a{color:inherit;text-decoration:none;}
+button{font-family:'Inter',sans-serif;cursor:pointer;}
+.skip{position:absolute;top:-60px;left:8px;background:var(--grn);color:#000;padding:8px 16px;font-weight:700;border-radius:6px;z-index:9999;transition:top .2s;}
+.skip:focus{top:8px;}
+
+/* ── TOPBAR ── */
+.topbar{background:#0d0f14;border-bottom:1px solid var(--bdr);height:56px;display:flex;align-items:center;position:sticky;top:0;z-index:200;}
+.topbar-inner{max-width:1280px;margin:0 auto;width:100%;padding:0 16px;display:flex;align-items:center;gap:12px;}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer;flex-shrink:0;}
+.logo-icon{width:38px;height:38px;background:var(--grn);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-ltr{font-size:14px;font-weight:800;color:#000;letter-spacing:-1px;line-height:1;}
+.logo-name{font-size:17px;font-weight:800;color:var(--t1);letter-spacing:-.3px;line-height:1;}
+.logo-name span{color:var(--grn);}
+.logo-sub{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;}
+.sbox{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:7px 14px;flex:1;max-width:360px;margin-left:auto;}
+.sbox:focus-within{border-color:var(--grn);}
+.sbox input{border:none;outline:none;background:transparent;color:var(--t1);font-size:13px;flex:1;font-family:'Inter',sans-serif;}
+.sbox input::placeholder{color:var(--t3);}
+.menu-btn{display:none;background:none;border:none;color:var(--t1);padding:8px;border-radius:8px;cursor:pointer;flex-shrink:0;}
+.menu-btn:hover{background:var(--card);}
+.menu-btn svg{display:block;}
+
+/* ── LAYOUT ── */
+.layout{display:flex;max-width:1280px;margin:0 auto;min-height:calc(100vh - 56px);}
+
+/* ── LEFT NAV ── */
+.lnav{width:220px;flex-shrink:0;background:var(--sb);border-right:1px solid var(--bdr);padding:14px 0;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;}
+.lnav::-webkit-scrollbar{width:3px;}
+.lnav::-webkit-scrollbar-thumb{background:var(--bdr);}
+.nl{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1.2px;padding:8px 18px 4px;}
+.ni{display:flex;align-items:center;gap:11px;padding:9px 18px;cursor:pointer;color:var(--t2);font-size:13px;font-weight:500;border-left:3px solid transparent;transition:all .12s;}
+.ni:hover{background:var(--hov);color:var(--t1);}
+.ni.on{background:var(--grn-a);color:var(--grn);border-left-color:var(--grn);font-weight:600;}
+.ni:focus-visible{outline:2px solid var(--grn);outline-offset:-2px;}
+.ndiv{height:1px;background:var(--bdr);margin:8px 0;}
+.ni svg{width:18px;height:18px;flex-shrink:0;}
+
+/* ── MOBILE OVERLAY NAV ── */
+.nav-overlay{display:none;position:fixed;inset:0;z-index:300;}
+.nav-overlay.open{display:block;}
+.nav-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.6);}
+.nav-drawer{position:absolute;top:0;left:0;width:280px;height:100%;background:var(--sb);border-right:1px solid var(--bdr);overflow-y:auto;transform:translateX(-100%);transition:transform .25s ease;}
+.nav-overlay.open .nav-drawer{transform:translateX(0);}
+.nav-drawer-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bdr);}
+.nav-close{background:none;border:none;color:var(--t2);cursor:pointer;padding:6px;border-radius:6px;}
+.nav-close:hover{color:var(--t1);background:var(--hov);}
+
+/* ── MAIN ── */
+.main{flex:1;min-width:0;padding:20px 18px;}
+
+/* ── RIGHT SIDEBAR ── */
+.rnav{width:290px;flex-shrink:0;padding:20px 16px;display:flex;flex-direction:column;gap:16px;}
+
+/* ── BOTTOM MOBILE NAV ── */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#0d0f14;border-top:1px solid var(--bdr);z-index:200;padding:0 4px 4px;}
+.bottom-nav-inner{display:flex;justify-content:space-around;}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 6px;cursor:pointer;color:var(--t3);font-size:10px;font-weight:500;border:none;background:none;font-family:'Inter',sans-serif;transition:color .15s;}
+.bnav-item.on{color:var(--grn);}
+.bnav-item svg{width:20px;height:20px;flex-shrink:0;}
+.bnav-item:hover{color:var(--t1);}
+
+/* ── PAGES ── */
+.page{display:none;animation:fi .2s ease;}
+.page.on{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SECTION HDR ── */
+.shdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.stitle{font-size:15px;font-weight:700;color:var(--t1);display:flex;align-items:center;gap:8px;}
+.stitle::before{content:'';width:3px;height:16px;background:var(--grn);border-radius:2px;display:inline-block;}
+.slink{font-size:12px;color:var(--grn);font-weight:600;cursor:pointer;}
+.slink:hover{text-decoration:underline;}
+
+/* ── LIVE BADGE ── */
+.live-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(255,92,92,.15);color:var(--red);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;border:1px solid rgba(255,92,92,.3);text-transform:uppercase;letter-spacing:.5px;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse 1.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+/* ── TABS ── */
+.tabs{display:flex;border-bottom:1px solid var(--bdr);margin-bottom:16px;overflow-x:auto;gap:0;}
+.tabs::-webkit-scrollbar{height:0;}
+.tb{padding:9px 16px;font-size:13px;font-weight:500;color:var(--t2);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:color .12s;font-family:'Inter',sans-serif;}
+.tb:hover{color:var(--t1);}
+.tb.on{color:var(--grn);border-bottom-color:var(--grn);font-weight:600;}
+.tp{display:none;}
+.tp.on{display:block;}
+
+/* ── LEAGUE BLOCK ── */
+.lb{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;margin-bottom:14px;}
+.lbh{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--card2);border-bottom:1px solid var(--bdr);}
+.lbh-name{font-size:13px;font-weight:600;color:var(--t1);}
+.lbh-sub{font-size:11px;color:var(--t3);margin-left:auto;}
+
+/* ── MATCH ROW ── */
+.mr{display:flex;align-items:center;padding:11px 16px;border-bottom:1px solid var(--bdr);cursor:pointer;transition:background .1s;gap:10px;}
+.mr:last-child{border-bottom:none;}
+.mr:hover{background:var(--hov);}
+.mt{font-size:11px;color:var(--t3);width:46px;flex-shrink:0;text-align:center;line-height:1.3;}
+.mt.live{color:var(--red);font-weight:700;}
+.mts{display:flex;flex-direction:column;gap:5px;flex:1;}
+.mtr{display:flex;align-items:center;justify-content:space-between;font-size:13px;}
+.mtn{color:var(--t1);font-weight:500;display:flex;align-items:center;gap:7px;}
+.mtn.dim{color:var(--t2);}
+.ms{font-size:14px;font-weight:700;color:var(--t1);min-width:18px;text-align:center;}
+.ms.w{color:var(--grn);}
+.mtv{font-size:10px;color:var(--t3);background:var(--card2);padding:2px 7px;border-radius:4px;flex-shrink:0;}
+svg.tlogo{width:22px;height:22px;flex-shrink:0;border-radius:50%;}
+img.tlogo{width:22px;height:22px;flex-shrink:0;object-fit:contain;}
+
+/* ── LOADING / ERROR STATES ── */
+.tbl-loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--t3);font-size:13px;gap:10px;}
+.tbl-spin{width:18px;height:18px;border:2px solid var(--bdr);border-top-color:var(--grn);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tbl-err{padding:20px;text-align:center;color:var(--t3);font-size:13px;line-height:1.7;}
+.empty-state{padding:32px;text-align:center;color:var(--t3);font-size:13px;}
+.empty-state span{font-size:28px;display:block;margin-bottom:8px;}
+
+/* ── STANDINGS TABLE ── */
+.tbl-wrap{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;}
+.rtbl{width:100%;border-collapse:collapse;font-size:12px;}
+.rtbl th{padding:8px 10px;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--bdr);text-align:center;white-space:nowrap;}
+.rtbl th:nth-child(2){text-align:left;}
+.rtbl td{padding:9px 10px;text-align:center;border-bottom:1px solid var(--bdr);font-size:12px;white-space:nowrap;}
+.rtbl td:nth-child(2){text-align:left;}
+.rtbl tr:last-child td{border-bottom:none;}
+.rtbl tr:hover td{background:var(--hov);}
+.rtbl .rpos{font-weight:700;color:var(--t2);width:24px;display:inline-block;}
+.rtbl .rpos.ch{color:var(--grn);}
+.rtbl .rpos.eu{color:var(--blu);}
+.rtbl .rpos.re{color:var(--red);}
+.rtbl .rteam{display:flex;align-items:center;gap:8px;}
+.rtbl .rlogo{width:20px;height:20px;object-fit:contain;flex-shrink:0;}
+.rtbl .rname{font-weight:500;color:var(--t1);}
+.rtbl .rpts{font-weight:700;color:var(--t1);}
+.rtbl .rgd.gpos{color:var(--grn);}
+.rtbl .rgd.gneg{color:var(--red);}
+.tbl-legend{display:flex;gap:14px;padding:10px 14px;font-size:11px;color:var(--t3);flex-wrap:wrap;border-top:1px solid var(--bdr);}
+.form{display:flex;gap:2px;}
+.fd{width:7px;height:7px;border-radius:50%;}
+.fw{background:var(--grn);}
+.fd2{background:var(--yel);}
+.fl{background:var(--red);}
+
+/* ── NEWS ── */
+.ngrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.nc{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:border-color .15s,transform .15s;display:block;}
+.nc:hover{border-color:var(--grn);transform:translateY(-2px);}
+.nimg{height:150px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:var(--card2);}
+.nimg img{width:100%;height:100%;object-fit:cover;}
+.ncat{position:absolute;top:8px;left:8px;background:var(--grn);color:#000;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.4px;}
+.nbody{padding:12px;}
+.ntitle{font-size:13px;font-weight:600;color:var(--t1);line-height:1.45;margin-bottom:5px;}
+.nmeta{font-size:11px;color:var(--t3);}
+.nlist{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;}
+.nli{display:flex;gap:12px;padding:12px;border-bottom:1px solid var(--bdr);cursor:pointer;transition:background .12s;text-decoration:none;}
+.nli:last-child{border-bottom:none;}
+.nli:hover{background:var(--hov);}
+.nlt{width:64px;height:54px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;background:var(--card2);}
+.nlt img{width:100%;height:100%;object-fit:cover;}
+.nli-title{font-size:13px;font-weight:500;color:var(--t1);line-height:1.4;margin-bottom:3px;}
+.nli-meta{font-size:11px;color:var(--t3);}
+
+/* ── WIDGET ── */
+.wgt{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;}
+.whdr{padding:11px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;}
+.wtitle{font-size:13px;font-weight:600;color:var(--t1);}
+
+/* ── SCORERS ── */
+.scrow{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--bdr);}
+.scrow:last-child{border-bottom:none;}
+.scpos{font-size:11px;font-weight:700;color:var(--t3);width:16px;}
+.scflag{font-size:16px;}
+.scinf{flex:1;}
+.scname{font-size:13px;font-weight:600;color:var(--t1);}
+.scteam{font-size:11px;color:var(--t3);}
+.scg{font-size:18px;font-weight:800;color:var(--grn);}
+
+/* ── FIXTURES ── */
+.fcard{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;margin-bottom:14px;}
+.flg{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--card2);border-bottom:1px solid var(--bdr);}
+.flgn{font-size:12px;font-weight:600;color:var(--t2);}
+.fmatch{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--bdr);cursor:pointer;transition:background .1s;}
+.fmatch:last-child{border-bottom:none;}
+.fmatch:hover{background:var(--hov);}
+.fteam{flex:1;display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+.fteam.l{align-items:flex-start;}
+.ftn{font-size:13px;font-weight:600;color:var(--t1);}
+.ftico{width:30px;height:30px;object-fit:contain;}
+.fcenter{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:72px;}
+.ftime{font-size:12px;font-weight:700;color:var(--t2);}
+.ftime.live{color:var(--red);}
+.fdate{font-size:10px;color:var(--t3);}
+.ftv{font-size:10px;color:var(--t3);background:var(--card2);padding:2px 8px;border-radius:4px;}
+
+/* ── PLAYER CARDS ── */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:14px;}
+.pcard{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:border-color .15s;}
+.pcard:hover{border-color:var(--grn);}
+.phead{height:100px;display:flex;align-items:center;justify-content:center;font-size:56px;position:relative;}
+.ppos{position:absolute;top:8px;right:8px;background:var(--grn-a);color:var(--grn);font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid rgba(0,214,143,.2);}
+.pbody{padding:12px;}
+.pname{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:2px;}
+.pclub{font-size:12px;color:var(--t3);display:flex;align-items:center;gap:5px;margin-bottom:10px;}
+.pstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.pst{background:var(--card2);border-radius:6px;padding:7px;text-align:center;}
+.pstn{font-size:16px;font-weight:800;color:var(--grn);}
+.pstl{font-size:9px;color:var(--t3);text-transform:uppercase;margin-top:1px;}
+
+/* ── HISTORY ── */
+.hcard{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:20px;margin-bottom:14px;}
+.hpill{display:inline-block;background:var(--grn-a);color:var(--grn);font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid rgba(0,214,143,.2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;}
+.hpill.ec{background:rgba(255,216,77,.08);color:var(--yel);border-color:rgba(255,216,77,.2);}
+.hyr{font-size:30px;font-weight:800;color:var(--grn);margin-bottom:8px;line-height:1;}
+.htitle{font-size:16px;font-weight:700;color:var(--t1);margin-bottom:10px;}
+.htext{font-size:13px;color:var(--t2);line-height:1.75;}
+.srow{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:10px;margin:14px 0;}
+.sbox2{background:var(--card2);border:1px solid var(--bdr);border-radius:8px;padding:11px;text-align:center;}
+.snum{font-size:22px;font-weight:800;color:var(--grn);}
+.slbl{font-size:10px;color:var(--t3);margin-top:2px;text-transform:uppercase;letter-spacing:.4px;}
+.tl{border-left:2px solid var(--bdr);padding-left:18px;margin:12px 0;}
+.tli{position:relative;margin-bottom:14px;}
+.tldot{position:absolute;left:-24px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--grn);border:2px solid var(--bg);}
+.tly{font-size:13px;font-weight:700;color:var(--grn);}
+.tlt{font-size:12px;color:var(--t2);line-height:1.6;}
+
+/* ── COMMUNITY FORM ── */
+.fmcard{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:20px;margin-bottom:16px;}
+.fmtitle{font-size:15px;font-weight:700;color:var(--t1);margin-bottom:16px;}
+.fmrow{margin-bottom:12px;}
+.fmlbl{display:block;font-size:11px;font-weight:600;color:var(--t2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px;}
+.fminp{width:100%;padding:10px 14px;background:var(--card2);border:1px solid var(--bdr);border-radius:8px;color:var(--t1);font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s;}
+.fminp:focus{border-color:var(--grn);box-shadow:0 0 0 3px rgba(0,214,143,.1);}
+.fminp::placeholder{color:var(--t3);}
+.fmta{resize:vertical;min-height:80px;}
+.fmbtn{background:var(--grn);color:#000;border:none;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:700;transition:background .15s;}
+.fmbtn:hover{background:var(--grn2);}
+.citem{background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:14px;margin-bottom:10px;}
+.cih{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.cin{font-weight:600;font-size:13px;color:var(--grn);}
+.cid{font-size:11px;color:var(--t3);}
+.cit{font-size:13px;color:var(--t2);line-height:1.65;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:70px;right:16px;background:var(--card2);color:var(--t1);padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;display:none;align-items:center;gap:10px;border-left:3px solid var(--grn);z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.4);}
+.toast.show{display:flex;}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;}
+
+footer{background:#0d0f14;border-top:1px solid var(--bdr);padding:18px 24px;text-align:center;}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:1060px){.rnav{display:none;}}
+@media(max-width:720px){
+  .lnav{display:none;}.menu-btn{display:flex;}.main{padding:12px 12px 80px;}
+  .bottom-nav{display:block;}.ngrid{grid-template-columns:1fr;}.pgrid{grid-template-columns:1fr 1fr;}
+  .toast{bottom:74px;}
+}
+@media(max-width:420px){.pgrid{grid-template-columns:1fr;}.logo-sub{display:none;}.sbox{max-width:180px;}}
+</style>
+</head>
+<body>
+<a href="#mc" class="skip">Saltar al contenido</a>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- ══ MOBILE DRAWER ══ -->
+<div id="nav-overlay" class="nav-overlay" role="dialog" aria-label="Menú de navegación" aria-modal="true">
+  <div class="nav-backdrop" onclick="closeDrawer()"></div>
+  <nav class="nav-drawer">
+    <div class="nav-drawer-header">
+      <div class="logo"><div class="logo-icon"><span class="logo-ltr">T&amp;P</span></div><div><div class="logo-name">Toque <span>&amp;</span> Pase</div></div></div>
+      <button class="nav-close" onclick="closeDrawer()" aria-label="Cerrar menú">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="nl">Principal</div>
+    <div class="ni" id="dnav-inicio" onclick="goTo('inicio');closeDrawer()" tabindex="0" role="button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Inicio
+    </div>
+    <div class="ni" id="dnav-noticias" onclick="goTo('noticias');closeDrawer()" tabindex="0" role="button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 0-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/></svg>Noticias
+    </div>
+    <div class="ni" id="dnav-partidos" onclick="goTo('partidos');closeDrawer()" tabindex="0" role="button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Partidos
+    </div>
+    <div class="ni" id="dnav-tabla" onclick="goTo('tabla');closeDrawer()" tabindex="0" role="button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Tabla
+    </div>
+    <div class="ni" id="dnav-equipos" onclick="goTo('equipos');closeDrawer()" tabindex="0" role="button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>Equipos
+    </div>
+    <div class="ni" id="dnav-jugadores" onclick="goTo('jugadores');closeDrawer()" tabindex="0" role="button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>Jugadores
+    </div>
+    <div class="ni" id="dnav-historia" onclick="goTo('historia');closeDrawer()" tabindex="0" role="button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Historia
+    </div>
+    <div class="ni" id="dnav-comunidad" onclick="goTo('comunidad');closeDrawer()" tabindex="0" role="button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Comunidad
+    </div>
+    <div class="ndiv"></div>
+    <div class="nl">Ligas</div>
+    <div class="ni" onclick="goTo('tabla');closeDrawer()" tabindex="0" role="button">🇪🇨 LigaPro Ecuador</div>
+    <div class="ni" onclick="swTabAndGo('t','ll')" tabindex="0" role="button">🇪🇸 LaLiga España</div>
+    <div class="ni" onclick="swTabAndGo('t','pl')" tabindex="0" role="button">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</div>
+    <div class="ni" onclick="swTabAndGo('t','bl')" tabindex="0" role="button">🇩🇪 Bundesliga</div>
+    <div class="ni" onclick="swTabAndGo('t','sa')" tabindex="0" role="button">🇮🇹 Serie A</div>
+    <div class="ni" onclick="swTabAndGo('t','l1')" tabindex="0" role="button">🇫🇷 Ligue 1</div>
+  </nav>
+</div>
+
+<!-- ══ TOPBAR ══ -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <button class="menu-btn" onclick="openDrawer()" aria-label="Abrir menú" aria-expanded="false" id="hamburger-btn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="logo" onclick="goTo('inicio')" role="button" tabindex="0" aria-label="Inicio" onkeydown="if(event.key==='Enter')goTo('inicio')">
+      <div class="logo-icon"><span class="logo-ltr">T&amp;P</span></div>
+      <div><div class="logo-name">Toque <span>&amp;</span> Pase</div><div class="logo-sub">Solo fútbol</div></div>
+    </div>
+    <div class="sbox" role="search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5c6070" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="search" placeholder="Buscar..." aria-label="Buscar" oninput="handleSearch(this.value)"/>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+<!-- ══ LEFT NAV ══ -->
+<nav class="lnav" aria-label="Navegación principal">
+  <div class="nl">Principal</div>
+  <div class="ni on" id="nav-inicio" onclick="goTo('inicio')" tabindex="0" role="button" aria-current="page">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Inicio
+  </div>
+  <div class="ni" id="nav-noticias" onclick="goTo('noticias')" tabindex="0" role="button">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 0-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/></svg>Noticias
+  </div>
+  <div class="ni" id="nav-partidos" onclick="goTo('partidos')" tabindex="0" role="button">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Partidos
+  </div>
+  <div class="ni" id="nav-tabla" onclick="goTo('tabla')" tabindex="0" role="button">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Tabla
+  </div>
+  <div class="ni" id="nav-equipos" onclick="goTo('equipos')" tabindex="0" role="button">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>Equipos
+  </div>
+  <div class="ni" id="nav-jugadores" onclick="goTo('jugadores')" tabindex="0" role="button">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>Jugadores
+  </div>
+  <div class="ni" id="nav-historia" onclick="goTo('historia')" tabindex="0" role="button">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Historia
+  </div>
+  <div class="ni" id="nav-comunidad" onclick="goTo('comunidad')" tabindex="0" role="button">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Comunidad
+  </div>
+  <div class="ndiv"></div>
+  <div class="nl">Ligas</div>
+  <div class="ni" onclick="swTabAndGo('t','ll')" tabindex="0" role="button">🇪🇸 LaLiga</div>
+  <div class="ni" onclick="swTabAndGo('t','pl')" tabindex="0" role="button">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</div>
+  <div class="ni" onclick="swTabAndGo('t','bl')" tabindex="0" role="button">🇩🇪 Bundesliga</div>
+  <div class="ni" onclick="swTabAndGo('t','sa')" tabindex="0" role="button">🇮🇹 Serie A</div>
+  <div class="ni" onclick="swTabAndGo('t','l1')" tabindex="0" role="button">🇫🇷 Ligue 1</div>
+  <div class="ndiv"></div>
+  <div class="nl">Ecuador</div>
+  <div class="ni" onclick="goTo('equipos')" tabindex="0" role="button">🇪🇨 La Tri</div>
+  <div class="ni" onclick="loadMatchesSection('lib')" tabindex="0" role="button">🏆 Copa Libertadores</div>
+</nav>
+
+<!-- ══ MAIN ══ -->
+<main id="mc" class="main">
+
+<!-- ═══ INICIO ═══ -->
+<div id="page-inicio" class="page on">
+  <div class="shdr">
+    <h1 class="stitle">Partidos — <span id="current-date"></span></h1>
+    <span id="live-indicator" style="display:none;" class="live-badge"><span class="live-dot"></span>EN VIVO</span>
+  </div>
+
+  <!-- Selector de liga para inicio -->
+  <div class="tabs" role="tablist" style="margin-bottom:16px;">
+    <button class="tb on" id="it-ucl" onclick="loadMatchesSection('ucl')" role="tab">Champions</button>
+    <button class="tb" id="it-ll"  onclick="loadMatchesSection('ll')"  role="tab">LaLiga</button>
+    <button class="tb" id="it-pl"  onclick="loadMatchesSection('pl')"  role="tab">Premier</button>
+    <button class="tb" id="it-bl"  onclick="loadMatchesSection('bl')"  role="tab">Bundesliga</button>
+    <button class="tb" id="it-sa"  onclick="loadMatchesSection('sa')"  role="tab">Serie A</button>
+    <button class="tb" id="it-lib" onclick="loadMatchesSection('lib')" role="tab">Libertadores</button>
+  </div>
+  <div id="matches-container">
+    <div class="tbl-loading"><div class="tbl-spin"></div>Cargando partidos...</div>
+  </div>
+
+  <div class="shdr" style="margin-top:20px;">
+    <h2 class="stitle">Últimas noticias</h2>
+    <span class="slink" onclick="goTo('noticias')">Ver todas →</span>
+  </div>
+  <div id="news-home">
+    <div class="tbl-loading"><div class="tbl-spin"></div>Cargando noticias...</div>
+  </div>
+</div>
+
+<!-- ═══ NOTICIAS ═══ -->
+<div id="page-noticias" class="page">
+  <div class="shdr"><h1 class="stitle">Noticias</h1></div>
+  <div class="tabs" role="tablist">
+    <button class="tb on" id="nt-all" onclick="loadNews('futbol')" role="tab">Todas</button>
+    <button class="tb" id="nt-ec"  onclick="loadNews('futbol ecuador')" role="tab">Ecuador</button>
+    <button class="tb" id="nt-ucl" onclick="loadNews('Champions League')" role="tab">Champions</button>
+    <button class="tb" id="nt-ll"  onclick="loadNews('LaLiga')" role="tab">LaLiga</button>
+  </div>
+  <div id="news-container">
+    <div class="tbl-loading"><div class="tbl-spin"></div>Cargando noticias...</div>
+  </div>
+</div>
+
+<!-- ═══ PARTIDOS ═══ -->
+<div id="page-partidos" class="page">
+  <div class="shdr">
+    <h1 class="stitle">Partidos</h1>
+    <span id="partidos-refresh" style="font-size:11px;color:var(--t3);">Actualiza cada 60s</span>
+  </div>
+  <div class="tabs" role="tablist">
+    <button class="tb on" id="pt-ucl" onclick="loadFixtures('ucl')" role="tab">Champions</button>
+    <button class="tb" id="pt-ll"  onclick="loadFixtures('ll')"  role="tab">LaLiga</button>
+    <button class="tb" id="pt-pl"  onclick="loadFixtures('pl')"  role="tab">Premier</button>
+    <button class="tb" id="pt-bl"  onclick="loadFixtures('bl')"  role="tab">Bundesliga</button>
+    <button class="tb" id="pt-sa"  onclick="loadFixtures('sa')"  role="tab">Serie A</button>
+    <button class="tb" id="pt-lib" onclick="loadFixtures('lib')" role="tab">Libertadores</button>
+  </div>
+  <div id="fixtures-container">
+    <div class="tbl-loading"><div class="tbl-spin"></div>Cargando partidos...</div>
+  </div>
+</div>
+
+<!-- ═══ TABLA ═══ -->
+<div id="page-tabla" class="page">
+  <div class="shdr"><h1 class="stitle">Tabla de Posiciones</h1><span style="font-size:11px;color:var(--t3);">Temporada 2025-26</span></div>
+  <div class="tabs" role="tablist">
+    <button class="tb on" id="tt-ll" onclick="swTab('t','ll')" role="tab">🇪🇸 LaLiga</button>
+    <button class="tb" id="tt-pl" onclick="swTab('t','pl')" role="tab">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier</button>
+    <button class="tb" id="tt-bl" onclick="swTab('t','bl')" role="tab">🇩🇪 Bundesliga</button>
+    <button class="tb" id="tt-sa" onclick="swTab('t','sa')" role="tab">🇮🇹 Serie A</button>
+    <button class="tb" id="tt-l1" onclick="swTab('t','l1')" role="tab">🇫🇷 Ligue 1</button>
+  </div>
+  <div id="tp-ll" class="tp on"><div id="tbl-ll" class="tbl-wrap"></div></div>
+  <div id="tp-pl" class="tp"><div id="tbl-pl" class="tbl-wrap"></div></div>
+  <div id="tp-bl" class="tp"><div id="tbl-bl" class="tbl-wrap"></div></div>
+  <div id="tp-sa" class="tp"><div id="tbl-sa" class="tbl-wrap"></div></div>
+  <div id="tp-l1" class="tp"><div id="tbl-l1" class="tbl-wrap"></div></div>
+</div>
+
+<!-- ═══ EQUIPOS ═══ -->
+<div id="page-equipos" class="page">
+  <div class="shdr"><h1 class="stitle">Equipos</h1></div>
+  <div class="tabs" role="tablist">
+    <button class="tb on" id="et-ec" onclick="swTab('e','ec')" role="tab">Ecuador</button>
+    <button class="tb" id="et-eu" onclick="swTab('e','eu')" role="tab">Europa</button>
+  </div>
+  <div id="ep-ec" class="tp on">
+    <div class="pgrid">
+      <div class="pcard" tabindex="0"><div class="phead" style="background:linear-gradient(135deg,#FFE000,#c8a800);"><svg width="56" height="56" viewBox="0 0 22 22"><circle cx="11" cy="11" r="10" fill="#FFE000" stroke="#222" stroke-width="1"/><text x="11" y="15.5" text-anchor="middle" font-size="8" fill="#222" font-weight="bold">BSC</text></svg><span class="ppos">Ecuador</span></div><div class="pbody"><div class="pname">Barcelona SC</div><div class="pclub">Guayaquil · 1925</div><div class="pstats"><div class="pst"><div class="pstn">17</div><div class="pstl">Títulos</div></div><div class="pst"><div class="pstn">1</div><div class="pstl">Recopa</div></div><div class="pst"><div class="pstn">59k</div><div class="pstl">Estadio</div></div></div></div></div>
+      <div class="pcard" tabindex="0"><div class="phead" style="background:linear-gradient(135deg,#002366,#003d99);"><svg width="56" height="56" viewBox="0 0 22 22"><circle cx="11" cy="11" r="10" fill="#fff" stroke="#002366" stroke-width="2"/><text x="11" y="14.5" text-anchor="middle" font-size="7" fill="#002366" font-weight="bold">LDU</text></svg><span class="ppos">Ecuador</span></div><div class="pbody"><div class="pname">LDU Quito</div><div class="pclub">Quito · 1930</div><div class="pstats"><div class="pst"><div class="pstn">11</div><div class="pstl">Títulos</div></div><div class="pst"><div class="pstn">1</div><div class="pstl">Copa Lib.</div></div><div class="pst"><div class="pstn">Grupo G</div><div class="pstl">Lib. 2026</div></div></div></div></div>
+      <div class="pcard" tabindex="0"><div class="phead" style="background:linear-gradient(135deg,#CC0000,#990000);"><svg width="56" height="56" viewBox="0 0 22 22"><circle cx="11" cy="11" r="10" fill="#CC0000"/><text x="11" y="14.5" text-anchor="middle" font-size="7" fill="#fff" font-weight="bold">IDV</text></svg><span class="ppos">Ecuador</span></div><div class="pbody"><div class="pname">Independiente del Valle</div><div class="pclub">Sangolquí · 1958</div><div class="pstats"><div class="pst"><div class="pstn">2</div><div class="pstl">Títulos</div></div><div class="pst"><div class="pstn">1</div><div class="pstl">Copa Sud.</div></div><div class="pst"><div class="pstn">Academia</div><div class="pstl">Top</div></div></div></div></div>
+      <div class="pcard" tabindex="0"><div class="phead" style="background:linear-gradient(135deg,#003DA5,#0056CC);"><svg width="56" height="56" viewBox="0 0 22 22"><circle cx="11" cy="11" r="10" fill="#003DA5"/><text x="11" y="14.5" text-anchor="middle" font-size="7" fill="#fff" font-weight="bold">EME</text></svg><span class="ppos">Ecuador</span></div><div class="pbody"><div class="pname">Emelec</div><div class="pclub">Guayaquil · 1929</div><div class="pstats"><div class="pst"><div class="pstn">14</div><div class="pstl">Títulos</div></div><div class="pst"><div class="pstn">Clásico</div><div class="pstl">vs BSC</div></div><div class="pst"><div class="pstn">GYE</div><div class="pstl">Puerto</div></div></div></div></div>
+    </div>
+  </div>
+  <div id="ep-eu" class="tp">
+    <div class="pgrid">
+      <div class="pcard" tabindex="0"><div class="phead" style="background:linear-gradient(135deg,#003D83,#001f5e);"><svg width="56" height="56" viewBox="0 0 22 22"><circle cx="11" cy="11" r="10" fill="#003D83"/><circle cx="11" cy="11" r="6" fill="#fff"/><text x="11" y="14.5" text-anchor="middle" font-size="7" fill="#003D83" font-weight="bold">PSG</text></svg><span class="ppos">Francia</span></div><div class="pbody"><div class="pname">Paris Saint-Germain</div><div class="pclub">París · Campeón Champions 2025</div><div class="pstats"><div class="pst"><div class="pstn">1</div><div class="pstl">UCL 2025</div></div><div class="pst"><div class="pstn">12</div><div class="pstl">Ligue 1</div></div><div class="pst"><div class="pstn">Pacho</div><div class="pstl">🇪🇨</div></div></div></div></div>
+      <div class="pcard" tabindex="0"><div class="phead" style="background:linear-gradient(135deg,#DC052D,#8B0019);"><svg width="56" height="56" viewBox="0 0 22 22"><circle cx="11" cy="11" r="10" fill="#DC052D"/><text x="11" y="14.5" text-anchor="middle" font-size="7" fill="#fff" font-weight="bold">FCB</text></svg><span class="ppos">Alemania</span></div><div class="pbody"><div class="pname">Bayern München</div><div class="pclub">Múnich · Bundesliga 2026</div><div class="pstats"><div class="pst"><div class="pstn">6</div><div class="pstl">UCL</div></div><div class="pst"><div class="pstn">Kane 53</div><div class="pstl">Goles</div></div><div class="pst"><div class="pstn">Semifinal</div><div class="pstl">UCL 2026</div></div></div></div></div>
+      <div class="pcard" tabindex="0"><div class="phead" style="background:linear-gradient(135deg,#004D98,#A50044);"><svg width="56" height="56" viewBox="0 0 22 22"><circle cx="11" cy="11" r="10" fill="#004D98"/><text x="11" y="14.5" text-anchor="middle" font-size="7" fill="#fff" font-weight="bold">FCB</text></svg><span class="ppos">España</span></div><div class="pbody"><div class="pname">FC Barcelona</div><div class="pclub">Barcelona · 1ero LaLiga 82pts</div><div class="pstats"><div class="pst"><div class="pstn">28</div><div class="pstl">LaLiga</div></div><div class="pst"><div class="pstn">5</div><div class="pstl">UCL</div></div><div class="pst"><div class="pstn">Lamine</div><div class="pstl">Yamal</div></div></div></div></div>
+      <div class="pcard" tabindex="0"><div class="phead" style="background:linear-gradient(135deg,#EF0107,#9B0000);"><svg width="56" height="56" viewBox="0 0 22 22"><circle cx="11" cy="11" r="10" fill="#EF0107"/><text x="11" y="14.5" text-anchor="middle" font-size="7" fill="#fff" font-weight="bold">ARS</text></svg><span class="ppos">Inglaterra</span></div><div class="pbody"><div class="pname">Arsenal FC</div><div class="pclub">Londres · Semifinal UCL 2026</div><div class="pstats"><div class="pst"><div class="pstn">13</div><div class="pstl">Premier</div></div><div class="pst"><div class="pstn">Hincapié</div><div class="pstl">🇪🇨</div></div><div class="pst"><div class="pstn">2do</div><div class="pstl">Premier</div></div></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ JUGADORES ═══ -->
+<div id="page-jugadores" class="page">
+  <div class="shdr"><h1 class="stitle">Jugadores destacados</h1></div>
+  <div class="tabs" role="tablist">
+    <button class="tb on" id="jt-ec" onclick="swTab('j','ec')" role="tab">🇪🇨 Ecuatorianos</button>
+    <button class="tb" id="jt-mu" onclick="swTab('j','mu')" role="tab">🌍 Mundo</button>
+  </div>
+  <div id="jp-ec" class="tp on">
+    <div class="pgrid">
+      <div class="pcard" tabindex="0"><div class="phead" style="background:linear-gradient(135deg,#003D83,#001f5e);"><span style="font-size:50px;">🧱</span><span class="ppos">Defensa</span></div><div class="pbody"><div class="pname">Willian Pacho</div><div class="pclub">PSG · Quinindé, Ecuador</div><div class="pstats"><div class="pst"><div class="pstn">24</div><div class="pstl">Edad</div></div><div class="pst"><div class="pstn">UCL ✓</div><div class="pstl">Campeón 2025</div></div><div class="pst"><div class="pstn">2ª Semif</div><div class="pstl">UCL 2026</div></div></div><p style="font-size:11px;color:var(--t3);margin-top:10px;line-height:1.6;">1er ecuatoriano en ganar la Champions League (2025).</p></div></div>
+      <div class="pcard" tabindex="0"><div class="phead" style="background:linear-gradient(135deg,#EF0107,#9B0000);"><span style="font-size:50px;">🛡</span><span class="ppos">Lateral Izq.</span></div><div class="pbody"><div class="pname">Piero Hincapié</div><div class="pclub">Arsenal FC · Ecuador</div><div class="pstats"><div class="pst"><div class="pstn">23</div><div class="pstl">Edad</div></div><div class="pst"><div class="pstn">Semifinal</div><div class="pstl">UCL 2026</div></div><div class="pst"><div class="pstn">Top</div><div class="pstl">Premier</div></div></div><p style="font-size:11px;color:var(--t3);margin-top:10px;line-height:1.6;">Consolidado en la élite con Arsenal en las semis de la UCL 2026.</p></div></div>
+      <div class="pcard" tabindex="0"><div class="phead" style="background:linear-gradient(135deg,#FFE000,#c8a800);"><span style="font-size:50px;">⚽</span><span class="ppos">Delantero</span></div><div class="pbody"><div class="pname">Enner Valencia</div><div class="pclub">Capitán La Tri</div><div class="pstats"><div class="pst"><div class="pstn">40+</div><div class="pstl">Goles</div></div><div class="pst"><div class="pstn">Qatar</div><div class="pstl">3 goles</div></div><div class="pst"><div class="pstn">3</div><div class="pstl">Mundiales</div></div></div><p style="font-size:11px;color:var(--t3);margin-top:10px;line-height:1.6;">Máximo goleador histórico de Ecuador. Inauguró Qatar 2022.</p></div></div>
+    </div>
+  </div>
+  <div id="jp-mu" class="tp">
+    <div class="pgrid">
+      <div class="pcard" tabindex="0"><div class="phead" style="background:linear-gradient(135deg,#DC052D,#7A0016);"><span style="font-size:50px;">🎯</span><span class="ppos">Delantero</span></div><div class="pbody"><div class="pname">Harry Kane</div><div class="pclub">Bayern · Inglaterra</div><div class="pstats"><div class="pst"><div class="pstn">53</div><div class="pstl">Goles</div></div><div class="pst"><div class="pstn">12</div><div class="pstl">UCL</div></div><div class="pst"><div class="pstn">45</div><div class="pstl">Partidos</div></div></div></div></div>
+      <div class="pcard" tabindex="0"><div class="phead" style="background:linear-gradient(135deg,#DC052D,#7A0016);"><span style="font-size:50px;">⚡</span><span class="ppos">Extremo</span></div><div class="pbody"><div class="pname">Luis Díaz</div><div class="pclub">Bayern · Colombia</div><div class="pstats"><div class="pst"><div class="pstn">24G</div><div class="pstl">Temporada</div></div><div class="pst"><div class="pstn">6</div><div class="pstl">UCL</div></div><div class="pst"><div class="pstn">87'</div><div class="pstl">vs Madrid</div></div></div></div></div>
+      <div class="pcard" tabindex="0"><div class="phead" style="background:linear-gradient(135deg,#004D98,#A50044);"><span style="font-size:50px;">💫</span><span class="ppos">Extremo</span></div><div class="pbody"><div class="pname">Lamine Yamal</div><div class="pclub">Barcelona · España</div><div class="pstats"><div class="pst"><div class="pstn">18</div><div class="pstl">Años</div></div><div class="pst"><div class="pstn">LaLiga</div><div class="pstl">Líder</div></div><div class="pst"><div class="pstn">Euro</div><div class="pstl">2024 ✓</div></div></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HISTORIA ═══ -->
+<div id="page-historia" class="page">
+  <div class="shdr"><h1 class="stitle">Historia del Fútbol</h1></div>
+  <div class="hcard"><span class="hpill">Orígenes</span><div class="hyr">1863</div><div class="htitle">El nacimiento del fútbol moderno</div><p class="htext">El 26 de octubre de 1863, once clubes ingleses fundaron la Football Association (FA). Redactaron 13 reglas formales que separaron el fútbol del rugby.</p><div class="srow"><div class="sbox2"><div class="snum">11</div><div class="slbl">Clubes fundadores</div></div><div class="sbox2"><div class="snum">1863</div><div class="slbl">Año FA</div></div><div class="sbox2"><div class="snum">13</div><div class="slbl">Reglas</div></div></div></div>
+  <div class="hcard"><span class="hpill">Expansión</span><div class="hyr">1904–1930</div><div class="htitle">FIFA y el primer Mundial</div><p class="htext">La FIFA nació en 1904 en París con 7 naciones. El primer Mundial fue en Uruguay 1930: 13 selecciones, final Uruguay 4-2 Argentina.</p><div class="tl"><div class="tli"><div class="tldot"></div><div class="tly">1904</div><div class="tlt">Fundación FIFA — 7 naciones fundadoras.</div></div><div class="tli"><div class="tldot"></div><div class="tly">1930</div><div class="tlt">Primer Mundial Uruguay. Campeón local.</div></div></div></div>
+  <div class="hcard"><span class="hpill">Actualidad</span><div class="hyr">2023–2026</div><div class="htitle">Nueva generación</div><p class="htext">PSG campeón de Champions 2025 (5-0 vs Inter). Barcelona domina LaLiga 2026. El Mundial 2026 en USA, Canadá y México tendrá 48 selecciones.</p><div class="tl"><div class="tli"><div class="tldot"></div><div class="tly">2025</div><div class="tlt">PSG campeón UCL. Pacho: primer ecuatoriano en ganar la orejona.</div></div><div class="tli"><div class="tldot"></div><div class="tly">2026</div><div class="tlt">Mundial USA-Canadá-México con 48 selecciones.</div></div></div></div>
+  <div class="hcard"><span class="hpill ec">🇪🇨 Ecuador</span><div class="hyr" style="color:var(--yel);">Ecuador</div><div class="htitle">Del debut mundialista al primer campeón de Champions</div><p class="htext">Ecuador debutó en su primer Mundial en Corea-Japón 2002. En Qatar 2022 inauguró el torneo venciendo 2-0 al anfitrión. Pacho ganó la Champions 2025.</p><div class="srow"><div class="sbox2"><div class="snum">1925</div><div class="slbl">Fundación FEF</div></div><div class="sbox2"><div class="snum">3</div><div class="slbl">Mundiales</div></div><div class="sbox2"><div class="snum">Pacho</div><div class="slbl">Champions</div></div></div></div>
+</div>
+
+<!-- ═══ COMUNIDAD ═══ -->
+<div id="page-comunidad" class="page">
+  <div class="shdr"><h1 class="stitle">Comunidad</h1></div>
+  <div style="max-width:620px;">
+    <div class="fmcard">
+      <div class="fmtitle">¿Qué opinas del fútbol hoy?</div>
+      <div class="fmrow"><label class="fmlbl" for="cf-name">Tu nombre</label><input class="fminp" type="text" id="cf-name" placeholder="Ej. Carlos Morocho" maxlength="50"/></div>
+      <div class="fmrow"><label class="fmlbl" for="cf-team">Tu equipo</label><select class="fminp" id="cf-team"><option value="">— Selecciona —</option><option>Barcelona SC</option><option>LDU Quito</option><option>El Nacional</option><option>Emelec</option><option>PSG</option><option>Bayern München</option><option>FC Barcelona</option><option>Real Madrid</option><option>Arsenal</option><option>Otro</option></select></div>
+      <div class="fmrow"><label class="fmlbl" for="cf-text">Tu comentario</label><textarea class="fminp fmta" id="cf-text" placeholder="Escribe tu opinión..." maxlength="400"></textarea></div>
+      <button class="fmbtn" onclick="submitComment()">Publicar ⚽</button>
+    </div>
+    <h2 class="stitle" style="margin-bottom:14px;">Comentarios recientes</h2>
+    <div id="clist">
+      <div class="citem"><div class="cih"><span class="cin">Andrés V. · PSG</span><span class="cid">hace 5 min</span></div><p class="cit">¡Pacho es un orgullo ecuatoriano! Ver a dos jugadores de Ecuador en las semifinales de Champions es histórico.</p></div>
+      <div class="citem"><div class="cih"><span class="cin">María J. · LDU Quito</span><span class="cid">hace 22 min</span></div><p class="cit">El partido de hoy de LDU vs Lanús es clave. ¡Vamos albos!</p></div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- ══ RIGHT SIDEBAR ══ -->
+<aside class="rnav">
+  <div class="wgt">
+    <div class="whdr"><span class="wtitle">⚽ Goleadores UCL</span></div>
+    <div id="sidebar-scorers">
+      <div class="tbl-loading" style="padding:20px;"><div class="tbl-spin"></div>Cargando...</div>
+    </div>
+  </div>
+  <div class="wgt">
+    <div class="whdr"><span class="wtitle">📅 Hoy se juega</span></div>
+    <div id="sidebar-today">
+      <div class="tbl-loading" style="padding:20px;"><div class="tbl-spin"></div>Cargando...</div>
+    </div>
+  </div>
+</aside>
+</div>
+
+<!-- ══ BOTTOM NAV ══ -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <button class="bnav-item on" id="bnav-inicio" onclick="goTo('inicio')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Inicio
+    </button>
+    <button class="bnav-item" id="bnav-noticias" onclick="goTo('noticias')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 0-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/></svg>Noticias
+    </button>
+    <button class="bnav-item" id="bnav-partidos" onclick="goTo('partidos')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Partidos
+    </button>
+    <button class="bnav-item" id="bnav-tabla" onclick="goTo('tabla')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Tabla
+    </button>
+    <button class="bnav-item" onclick="openDrawer()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="19" r="1" fill="currentColor"/></svg>Más
+    </button>
+  </div>
+</nav>
+
+<footer>
+  <p style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:3px;">Toque <span style="color:var(--grn);">&amp;</span> Pase</p>
+  <p style="font-size:11px;color:var(--t3);">Solo fútbol · Datos: football-data.org · Diseño WCAG 2.2</p>
+</footer>
+
+<script>
+/* ══════════════════════
+   CONFIGURACIÓN
+══════════════════════ */
+var LEAGUES = {
+  'll':  { id:2014, name:'LaLiga',       code:'PD',  chZ:4, euZ:2, reZ:3, total:20 },
+  'pl':  { id:2021, name:'Premier',      code:'PL',  chZ:4, euZ:3, reZ:3, total:20 },
+  'bl':  { id:2002, name:'Bundesliga',   code:'BL1', chZ:4, euZ:2, reZ:2, total:18 },
+  'sa':  { id:2019, name:'Serie A',      code:'SA',  chZ:4, euZ:2, reZ:3, total:20 },
+  'l1':  { id:2015, name:'Ligue 1',      code:'FL1', chZ:4, euZ:2, reZ:3, total:18 },
+  'ucl': { id:null, name:'Champions',    code:'CL',  chZ:0, euZ:0, reZ:0, total:32 },
+  'lib': { id:null, name:'Libertadores', code:'CLI', chZ:0, euZ:0, reZ:0, total:32 },
+};
+
+var COMP_LABELS = {
+  'ucl':'UEFA Champions League',
+  'll' :'LaLiga EA Sports',
+  'pl' :'Premier League',
+  'bl' :'Bundesliga',
+  'sa' :'Serie A',
+  'l1' :'Ligue 1',
+  'lib':'Copa Libertadores 2026'
+};
+
+var tblLoaded = {};
+var liveInterval = null;
+var currentMatchesComp = 'ucl';
+var currentFixturesComp = 'ucl';
+
+/* ══════════════════════
+   UTILIDADES
+══════════════════════ */
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = '✓ ' + msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+
+function handleSearch(v){
+  if(v.length > 2) toast('Buscando: "' + v + '"...');
+}
+
+function formatTime(utc) {
+  // Convierte hora UTC a hora Ecuador (UTC-5)
+  var d = new Date(utc);
+  return d.toLocaleTimeString('es-EC', {hour:'2-digit', minute:'2-digit', timeZone:'America/Guayaquil'});
+}
+
+function formatDate(utc) {
+  var d = new Date(utc);
+  var days = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  var months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()];
+}
+
+function isToday(utc) {
+  var d = new Date(utc);
+  var now = new Date();
+  return d.toDateString() === now.toDateString();
+}
+
+function teamLogo(team) {
+  if (!team) return '<svg class="tlogo" viewBox="0 0 22 22"><circle cx="11" cy="11" r="10" fill="#333"/></svg>';
+  if (team.crest) return '<img class="tlogo" src="' + team.crest + '" alt="' + (team.shortName||'') + '" onerror="this.outerHTML=\'<svg class=tlogo viewBox=\\\"0 0 22 22\\\"><circle cx=\\\"11\\\" cy=\\\"11\\\" r=\\\"10\\\" fill=\\\"#333\\\"/></svg>\'">';
+  return '<svg class="tlogo" viewBox="0 0 22 22"><circle cx="11" cy="11" r="10" fill="#333"/><text x="11" y="14.5" text-anchor="middle" font-size="6" fill="#fff">' + (team.shortName||'?').slice(0,3) + '</text></svg>';
+}
+
+function statusLabel(m) {
+  var s = m.status;
+  if (s === 'IN_PLAY' || s === 'LIVE')   return '<span class="mt live">VIVO<br>' + (m.minute||'') + '\'</span>';
+  if (s === 'PAUSED')                     return '<span class="mt live">DESC.</span>';
+  if (s === 'FINISHED')                   return '<span class="mt" style="color:var(--t3);">FIN</span>';
+  if (s === 'TIMED' || s === 'SCHEDULED') {
+    return '<span class="mt">' + formatTime(m.utcDate) + '<br><span style="font-size:9px;color:var(--grn);">EC</span></span>';
+  }
+  return '<span class="mt" style="color:var(--t3);">' + s + '</span>';
+}
+
+function scoreOf(m, side) {
+  var sc = m.score;
+  if (!sc) return '';
+  var ft = sc.fullTime || {};
+  var ht = sc.halfTime || {};
+  var n = (m.status === 'TIMED' || m.status === 'SCHEDULED') ? null : (ft[side] != null ? ft[side] : ht[side]);
+  if (n === null || n === undefined) return '';
+  var winner = sc.winner;
+  var isWin = (side === 'home' && winner === 'HOME_TEAM') || (side === 'away' && winner === 'AWAY_TEAM');
+  return '<span class="ms' + (isWin ? ' w' : '') + '">' + n + '</span>';
+}
+
+/* ══════════════════════
+   MATCHES — INICIO
+══════════════════════ */
+function loadMatchesSection(comp) {
+  currentMatchesComp = comp;
+
+  // Resaltar tab activo
+  ['ucl','ll','pl','bl','sa','lib'].forEach(function(k){
+    var b = document.getElementById('it-' + k);
+    if (b) b.classList.toggle('on', k === comp);
+  });
+
+  var container = document.getElementById('matches-container');
+  container.innerHTML = '<div class="tbl-loading"><div class="tbl-spin"></div>Cargando partidos...</div>';
+
+  fetch('/api/matches?competition=' + comp + '&mode=week')
+    .then(function(r){ return r.json(); })
+    .then(function(data){ renderMatches(container, data.matches || [], comp); })
+    .catch(function(err){ container.innerHTML = '<div class="tbl-err">⚠️ No se pudieron cargar los partidos.<br><span style="font-size:11px;">' + err.message + '</span></div>'; });
+}
+
+function renderMatches(container, matches, comp) {
+  if (!matches.length) {
+    container.innerHTML = '<div class="empty-state"><span>🏟️</span>No hay partidos esta semana para esta competición.</div>';
+    return;
+  }
+
+  var hasLive = matches.some(function(m){ return m.status==='IN_PLAY'||m.status==='LIVE'||m.status==='PAUSED'; });
+  var liveInd = document.getElementById('live-indicator');
+  if (liveInd) liveInd.style.display = hasLive ? 'inline-flex' : 'none';
+
+  // Agrupar por fecha
+  var byDay = {};
+  matches.forEach(function(m){
+    var day = new Date(m.utcDate).toDateString();
+    if (!byDay[day]) byDay[day] = [];
+    byDay[day].push(m);
+  });
+
+  var html = '';
+  Object.keys(byDay).forEach(function(day){
+    var dayMatches = byDay[day];
+    var label = isToday(dayMatches[0].utcDate) ? 'HOY' : formatDate(dayMatches[0].utcDate);
+    html += '<div class="lb">';
+    html += '<div class="lbh"><span class="lbh-name">' + COMP_LABELS[comp] + '</span><span class="lbh-sub">' + label + '</span></div>';
+    dayMatches.forEach(function(m){
+      var isLive = m.status==='IN_PLAY'||m.status==='LIVE'||m.status==='PAUSED';
+      var homeScore = scoreOf(m,'home');
+      var awayScore = scoreOf(m,'away');
+      html += '<div class="mr" tabindex="0" role="button" onclick="toast(\'' + (m.homeTeam&&m.homeTeam.shortName||'') + ' vs ' + (m.awayTeam&&m.awayTeam.shortName||'') + '\')">';
+      html += statusLabel(m);
+      html += '<div class="mts">';
+      html += '<div class="mtr"><span class="mtn">' + teamLogo(m.homeTeam) + (m.homeTeam&&m.homeTeam.shortName||'—') + '</span>' + (homeScore||'') + '</div>';
+      html += '<div class="mtr"><span class="mtn dim">' + teamLogo(m.awayTeam) + (m.awayTeam&&m.awayTeam.shortName||'—') + '</span>' + (awayScore||'') + '</div>';
+      html += '</div>';
+      if (m.competition && m.competition.name) html += '<span class="mtv" style="font-size:9px;">' + (m.matchday?'J'+m.matchday:'') + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+
+  container.innerHTML = html;
+}
+
+/* ══════════════════════
+   FIXTURES — PARTIDOS PAGE
+══════════════════════ */
+function loadFixtures(comp) {
+  currentFixturesComp = comp;
+
+  // Tabs activos
+  ['ucl','ll','pl','bl','sa','lib'].forEach(function(k){
+    var b = document.getElementById('pt-' + k);
+    if (b) b.classList.toggle('on', k === comp);
+  });
+
+  var container = document.getElementById('fixtures-container');
+  container.innerHTML = '<div class="tbl-loading"><div class="tbl-spin"></div>Cargando...</div>';
+
+  fetch('/api/matches?competition=' + comp + '&mode=week')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var matches = data.matches || [];
+      if (!matches.length) {
+        container.innerHTML = '<div class="empty-state"><span>📅</span>No hay partidos próximos esta semana.</div>';
+        return;
+      }
+      var html = '<div class="fcard"><div class="flg"><span class="flgn">' + COMP_LABELS[comp] + '</span></div>';
+      matches.forEach(function(m){
+        var isLive = m.status==='IN_PLAY'||m.status==='LIVE'||m.status==='PAUSED';
+        var isFin  = m.status==='FINISHED';
+        var homeScore = scoreOf(m,'home');
+        var awayScore = scoreOf(m,'away');
+        var timeLabel = isLive ? '<span class="live-badge" style="font-size:10px;"><span class="live-dot"></span>' + (m.minute||'')+'\'</span>'
+                      : isFin  ? '<span class="ftime">FIN</span>'
+                      :          '<span class="ftime">' + formatTime(m.utcDate) + ' EC</span>';
+        html += '<div class="fmatch" tabindex="0" role="button">';
+        html += '<div class="fteam l">';
+        if (m.homeTeam&&m.homeTeam.crest) html += '<img class="ftico" src="' + m.homeTeam.crest + '" alt="" onerror="this.style.display=\'none\'">';
+        html += '<div class="ftn">' + (m.homeTeam&&m.homeTeam.shortName||'—') + '</div>';
+        if (homeScore) html += '<div style="font-size:20px;font-weight:800;color:var(--t1);">' + homeScore + '</div>';
+        html += '</div>';
+        html += '<div class="fcenter">' + timeLabel + '<div class="fdate">' + (isToday(m.utcDate)?'HOY':formatDate(m.utcDate)) + '</div></div>';
+        html += '<div class="fteam">';
+        if (m.awayTeam&&m.awayTeam.crest) html += '<img class="ftico" src="' + m.awayTeam.crest + '" alt="" onerror="this.style.display=\'none\'">';
+        html += '<div class="ftn">' + (m.awayTeam&&m.awayTeam.shortName||'—') + '</div>';
+        if (awayScore) html += '<div style="font-size:20px;font-weight:800;color:var(--t1);">' + awayScore + '</div>';
+        html += '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    })
+    .catch(function(err){
+      container.innerHTML = '<div class="tbl-err">⚠️ Error al cargar partidos.<br><span style="font-size:11px;">' + err.message + '</span></div>';
+    });
+}
+
+/* ══════════════════════
+   STANDINGS — TABLA
+══════════════════════ */
+function posClass(pos, cfg) {
+  if (pos <= cfg.chZ) return 'ch';
+  if (pos <= cfg.chZ + cfg.euZ) return 'eu';
+  if (pos > cfg.total - cfg.reZ) return 're';
+  return '';
+}
+
+function loadTable(key) {
+  if (tblLoaded[key]) return;
+  tblLoaded[key] = true;
+  var wrap = document.getElementById('tbl-' + key);
+  if (!wrap) return;
+  wrap.innerHTML = '<div class="tbl-loading"><div class="tbl-spin"></div>Cargando tabla...</div>';
+
+  fetch('/api/standings?league=' + key)
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(data){
+      var total = data.standings && data.standings.find(function(s){ return s.type==='TOTAL'; });
+      if (!total || !total.table) throw new Error('Sin datos');
+      renderTable(key, total.table);
+    })
+    .catch(function(err){
+      wrap.innerHTML = '<div class="tbl-err">⚠️ No se pudo cargar la tabla.<br><span style="font-size:11px;">' + err.message + '</span></div>';
+    });
+}
+
+function renderTable(key, standings) {
+  var cfg = LEAGUES[key];
+  var wrap = document.getElementById('tbl-' + key);
+  if (!wrap) return;
+  var rows = standings.map(function(e, i){
+    var pos = e.position || (i+1);
+    var pc = posClass(pos, cfg);
+    var gd = e.goalDifference >= 0 ? '+'+e.goalDifference : e.goalDifference;
+    var gdClass = e.goalDifference > 0 ? 'gpos' : e.goalDifference < 0 ? 'gneg' : '';
+    var logo = (e.team&&e.team.crest) ? '<img class="rlogo" src="'+e.team.crest+'" alt="" onerror="this.style.display=\'none\'">' : '';
+    var name = e.team ? (e.team.shortName||e.team.name) : '—';
+    var form = (e.form||'').split(',').slice(-5).map(function(f){
+      var cl = f==='W'?'fw':f==='D'?'fd2':f==='L'?'fl':'';
+      return '<div class="fd '+cl+'" title="'+f+'"></div>';
+    }).join('');
+    return '<tr><td><span class="rpos '+pc+'">'+pos+'</span></td>' +
+      '<td><div class="rteam">'+logo+'<span class="rname">'+name+'</span></div></td>' +
+      '<td>'+e.playedGames+'</td><td>'+e.won+'</td><td>'+e.draw+'</td><td>'+e.lost+'</td>' +
+      '<td>'+e.goalsFor+'</td><td>'+e.goalsAgainst+'</td>' +
+      '<td class="rgd '+gdClass+'">'+gd+'</td>' +
+      '<td><div class="form">'+form+'</div></td>' +
+      '<td class="rpts">'+e.points+'</td></tr>';
+  }).join('');
+
+  wrap.innerHTML = '<div style="overflow-x:auto;"><table class="rtbl"><thead><tr>' +
+    '<th>#</th><th>Equipo</th><th title="Jugados">PJ</th><th>G</th><th>E</th><th>P</th>' +
+    '<th>GF</th><th>GC</th><th>DG</th><th>Forma</th><th>Pts</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
+    '<div class="tbl-legend">' +
+    '<span><span style="color:var(--grn);font-weight:700;">■</span> Champions</span>' +
+    '<span><span style="color:var(--blu);font-weight:700;">■</span> Europa</span>' +
+    '<span><span style="color:var(--red);font-weight:700;">■</span> Descenso</span>' +
+    '<span style="margin-left:auto;opacity:.6;">football-data.org</span>' +
+    '</div>';
+}
+
+/* ══════════════════════
+   GOLEADORES — SIDEBAR
+══════════════════════ */
+function loadScorers() {
+  var el = document.getElementById('sidebar-scorers');
+  fetch('/api/scorers?competition=ucl&limit=5')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var scorers = data.scorers || [];
+      if (!scorers.length) { el.innerHTML = '<div class="tbl-err" style="padding:12px;">Sin datos</div>'; return; }
+      el.innerHTML = scorers.map(function(s, i){
+        var p = s.player || {};
+        var t = s.team || {};
+        var flag = getFlagEmoji(p.nationality);
+        return '<div class="scrow"><span class="scpos">'+(i+1)+'</span><span class="scflag">'+flag+'</span>' +
+          '<div class="scinf"><div class="scname">'+(p.lastName||p.name||'—')+'</div><div class="scteam">'+(t.shortName||t.name||'—')+'</div></div>' +
+          '<span class="scg">'+(s.goals||0)+'</span></div>';
+      }).join('');
+    })
+    .catch(function(){ el.innerHTML = '<div class="tbl-err" style="padding:12px;">⚠️ Sin datos</div>'; });
+}
+
+function getFlagEmoji(nationality) {
+  var flags = {
+    'England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','France':'🇫🇷','Germany':'🇩🇪','Spain':'🇪🇸','Italy':'🇮🇹',
+    'Portugal':'🇵🇹','Brazil':'🇧🇷','Argentina':'🇦🇷','Colombia':'🇨🇴','Ecuador':'🇪🇨',
+    'Netherlands':'🇳🇱','Belgium':'🇧🇪','Croatia':'🇭🇷','Poland':'🇵🇱','Norway':'🇳🇴',
+    'Austria':'🇦🇹','Uruguay':'🇺🇾','Chile':'🇨🇱','Morocco':'🇲🇦','Senegal':'🇸🇳',
+    'Nigeria':'🇳🇬','Ghana':'🇬🇭','Ivory Coast':'🇨🇮'
+  };
+  return flags[nationality] || '🌍';
+}
+
+/* ══════════════════════
+   SIDEBAR HOY
+══════════════════════ */
+function loadTodaySidebar() {
+  var el = document.getElementById('sidebar-today');
+  fetch('/api/matches?competition=ucl&mode=today')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var matches = (data.matches||[]).filter(function(m){ return isToday(m.utcDate); });
+      if (!matches.length) {
+        el.innerHTML = '<div style="padding:12px;text-align:center;color:var(--t3);font-size:12px;">No hay partidos UCL hoy</div>';
+        return;
+      }
+      el.innerHTML = matches.slice(0,4).map(function(m){
+        var isLive = m.status==='IN_PLAY'||m.status==='LIVE'||m.status==='PAUSED';
+        var hs = scoreOf(m,'home'), as = scoreOf(m,'away');
+        return '<div class="mr" tabindex="0" onclick="toast(\''+(m.homeTeam&&m.homeTeam.shortName||'')+' vs '+(m.awayTeam&&m.awayTeam.shortName||'')+'\')">'+
+          (isLive?'<span class="mt live">VIVO</span>':'<span class="mt">'+formatTime(m.utcDate)+'<br><span style="font-size:9px;color:var(--grn);">EC</span></span>')+
+          '<div class="mts">'+
+          '<div class="mtr"><span class="mtn" style="font-size:12px;">'+teamLogo(m.homeTeam)+(m.homeTeam&&m.homeTeam.shortName||'—')+'</span>'+hs+'</div>'+
+          '<div class="mtr"><span class="mtn dim" style="font-size:12px;">'+teamLogo(m.awayTeam)+(m.awayTeam&&m.awayTeam.shortName||'—')+'</span>'+as+'</div>'+
+          '</div></div>';
+      }).join('');
+    })
+    .catch(function(){ el.innerHTML = '<div style="padding:12px;text-align:center;color:var(--t3);font-size:12px;">⚠️ Sin datos</div>'; });
+}
+
+/* ══════════════════════
+   NOTICIAS
+══════════════════════ */
+function loadNews(topic, targetId) {
+  var container = document.getElementById(targetId || 'news-container');
+  if (!container) return;
+  container.innerHTML = '<div class="tbl-loading"><div class="tbl-spin"></div>Cargando noticias...</div>';
+
+  // Actualizar tabs si es la página de noticias
+  if (!targetId) {
+    var topics = {'futbol':'all','futbol ecuador':'ec','Champions League':'ucl','LaLiga':'ll'};
+    var key = topics[topic] || 'all';
+    ['all','ec','ucl','ll'].forEach(function(k){
+      var b = document.getElementById('nt-'+k);
+      if (b) b.classList.toggle('on', k === key);
+    });
+  }
+
+  fetch('/api/news?topic=' + encodeURIComponent(topic) + '&max=8')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var articles = data.articles || [];
+      if (!articles.length) {
+        container.innerHTML = '<div class="empty-state"><span>📰</span>No hay noticias disponibles ahora.</div>';
+        return;
+      }
+      var html = '<div class="nlist">';
+      articles.forEach(function(a){
+        var imgHtml = a.image
+          ? '<img src="' + a.image + '" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML=\'📰\'">'
+          : '📰';
+        var pub = a.publishedAt ? new Date(a.publishedAt).toLocaleDateString('es-ES', {day:'numeric',month:'short'}) : '';
+        html += '<a class="nli" href="' + (a.url||'#') + '" target="_blank" rel="noopener">' +
+          '<div class="nlt">' + imgHtml + '</div>' +
+          '<div><div class="nli-title">' + (a.title||'Sin título') + '</div>' +
+          '<div class="nli-meta">' + (a.source||'') + ' · ' + pub + '</div></div>' +
+          '</a>';
+      });
+      html += '</div>';
+      if (data.static) html += '<p style="text-align:center;font-size:11px;color:var(--t3);padding:8px;">Configura GNEWS_KEY para noticias en tiempo real</p>';
+      container.innerHTML = html;
+    })
+    .catch(function(err){
+      container.innerHTML = '<div class="tbl-err">⚠️ Error al cargar noticias.<br><span style="font-size:11px;">' + err.message + '</span></div>';
+    });
+}
+
+/* ══════════════════════
+   NAVEGACIÓN
+══════════════════════ */
+var pages = ['inicio','noticias','partidos','tabla','equipos','jugadores','historia','comunidad'];
+
+function goTo(id) {
+  pages.forEach(function(p){
+    var el = document.getElementById('page-'+p);
+    if (el) el.classList.remove('on');
+    ['nav-','dnav-','bnav-'].forEach(function(pfx){
+      var n = document.getElementById(pfx+p);
+      if (n){ n.classList.remove('on'); n.removeAttribute('aria-current'); }
+    });
+  });
+
+  var pg = document.getElementById('page-'+id);
+  if (pg) pg.classList.add('on');
+
+  ['nav-','dnav-','bnav-'].forEach(function(pfx){
+    var n = document.getElementById(pfx+id);
+    if (n){ n.classList.add('on'); n.setAttribute('aria-current','page'); }
+  });
+
+  if (id === 'tabla')    loadTable('ll');
+  if (id === 'partidos') loadFixtures(currentFixturesComp);
+  if (id === 'noticias') loadNews('futbol');
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function swTab(pfx, id) {
+  document.querySelectorAll('[id^="'+pfx+'t-"]').forEach(function(b){
+    b.classList.remove('on'); b.setAttribute('aria-selected','false'); b.tabIndex=-1;
+  });
+  document.querySelectorAll('[id^="'+pfx+'p-"]').forEach(function(p){ p.classList.remove('on'); });
+  var btn = document.getElementById(pfx+'t-'+id);
+  var pan = document.getElementById(pfx+'p-'+id);
+  if (btn){ btn.classList.add('on'); btn.setAttribute('aria-selected','true'); btn.tabIndex=0; }
+  if (pan) pan.classList.add('on');
+  if (pfx === 't' && LEAGUES[id]) loadTable(id);
+}
+
+function swTabAndGo(pfx, id) {
+  goTo('tabla');
+  setTimeout(function(){ swTab(pfx, id); }, 100);
+}
+
+/* ══════════════════════
+   DRAWER MÓVIL
+══════════════════════ */
+function openDrawer() {
+  var o = document.getElementById('nav-overlay');
+  o.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  var btn = document.getElementById('hamburger-btn');
+  if (btn) btn.setAttribute('aria-expanded','true');
+}
+function closeDrawer() {
+  var o = document.getElementById('nav-overlay');
+  o.classList.remove('open');
+  document.body.style.overflow = '';
+  var btn = document.getElementById('hamburger-btn');
+  if (btn){ btn.setAttribute('aria-expanded','false'); btn.focus(); }
+}
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeDrawer(); });
+
+/* ══════════════════════
+   COMUNIDAD
+══════════════════════ */
+function submitComment() {
+  var name = document.getElementById('cf-name').value.trim();
+  var team = document.getElementById('cf-team').value;
+  var text = document.getElementById('cf-text').value.trim();
+  if (!name){ alert('Ingresa tu nombre.'); return; }
+  if (!text){ alert('Escribe un comentario.'); return; }
+  var label = name + (team?' · '+team:'');
+  var div = document.createElement('div');
+  div.className = 'citem';
+  div.style.borderLeft = '3px solid var(--grn)';
+  div.innerHTML = '<div class="cih"><span class="cin">'+label+'</span><span class="cid">ahora mismo</span></div>' +
+    '<p class="cit">'+text.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</p>';
+  var list = document.getElementById('clist');
+  list.insertBefore(div, list.firstChild);
+  document.getElementById('cf-name').value = '';
+  document.getElementById('cf-team').value = '';
+  document.getElementById('cf-text').value = '';
+  toast('¡Comentario publicado!');
+}
+
+/* ══════════════════════
+   AUTO-REFRESH (60s)
+══════════════════════ */
+function startAutoRefresh() {
+  if (liveInterval) clearInterval(liveInterval);
+  liveInterval = setInterval(function(){
+    // Refrescar matches del inicio si estamos ahí
+    var pg = document.getElementById('page-inicio');
+    if (pg && pg.classList.contains('on')) {
+      loadMatchesSection(currentMatchesComp);
+      loadTodaySidebar();
+    }
+    // Refrescar partidos si estamos en esa página
+    var pf = document.getElementById('page-partidos');
+    if (pf && pf.classList.contains('on')) {
+      loadFixtures(currentFixturesComp);
+    }
+  }, 60000);
+}
+
+/* ══════════════════════
+   INIT
+══════════════════════ */
+window.addEventListener('DOMContentLoaded', function(){
+  // Fecha actual
+  var span = document.getElementById('current-date');
+  if (span) span.textContent = new Date().toLocaleDateString('es-EC',{day:'numeric',month:'short',year:'numeric',timeZone:'America/Guayaquil'});
+
+  // Cargar datos iniciales
+  loadMatchesSection('ucl');
+  loadTable('ll');
+  loadScorers();
+  loadTodaySidebar();
+  loadNews('futbol', 'news-home');
+
+  // Auto-refresh
+  startAutoRefresh();
+});
+</script>
+</body>
+</html>
